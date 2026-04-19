@@ -12,18 +12,35 @@ body {
   margin: 0;
 }
 
-/* GRID */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+/* SCROLL CONTAINER */
+.scroll-wrapper {
+  overflow: hidden;
+  width: 100%;
+  padding: 30px 0;
+}
+
+/* SCROLL TRACK */
+.scroll-track {
+  display: flex;
   gap: 24px;
-  padding: 30px;
-  max-width: 1200px;
-  margin: auto;
+  width: max-content;
+  animation: scroll 60s linear infinite;
+}
+
+/* pause on hover */
+.scroll-wrapper:hover .scroll-track {
+  animation-play-state: paused;
+}
+
+/* animation */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* CARD */
 .card {
+  min-width: 260px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
@@ -63,6 +80,14 @@ body {
   font-size: 12px;
   color: #666;
   margin-bottom: 6px;
+}
+
+/* segment badge */
+.segment {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 .card h3 {
@@ -107,78 +132,87 @@ body {
 
 <body>
 
-<div class="card-grid" id="excavator-grid"></div>
+<div class="scroll-wrapper">
+  <div class="scroll-track" id="track"></div>
+</div>
 
 <script>
 const excavators = [
-
-  // 🔹 Budget
+    // 🔹 Budget
   {
     title: "IHI iS4GX Mini Excavator",
     price: "Whatsapp us for Price • 500kg",
-    label: "Budget / Small Jobs",
+    type: "mini",
     segment: "budget",
+    label: "Budget / Small Jobs",
     img: "https://i.imgur.com/PNzuBCZ.jpeg",
     pageLink: "https://www.sciconmachinery.com/ihi-is4gx-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=IHI iS4GX"
   },
 
-  {
+{
     title: "Komatsu PC10 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Budget / Small Jobs",
+    type: "mini",
     segment: "budget",
+    label: "Budget / Small Jobs",
     img: "https://i.imgur.com/aJfNkrI.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-pc10-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=Komatsu PC10"
   },
 
-  {
+{
     title: "Kubota K015 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Budget / Small Jobs",
+    type: "mini",
     segment: "budget",
+    label: "Budget / Small Jobs",
     img: "https://i.imgur.com/OeOz6JR.jpeg",
     pageLink: "https://www.sciconmachinery.com/kubota-k015-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KubotaK015"
   },
 
+
   // 🔹 Popular
-  {
+{
     title: "Kubota K027 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/M0PXb8V.jpeg",
     pageLink: "https://www.sciconmachinery.com/kubota-k027-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KubotaK027"
   },
 
-  {
+{
     title: "Kubota K025 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/Tylisyc.jpeg",
     pageLink: "https://www.sciconmachinery.com/kubota-k025-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KubotaK025"
   },
-
-  {
+  
+{
     title: "Yanmar B27 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/zcqDKbQ.jpeg",
     pageLink: "https://www.sciconmachinery.com/yanmar-b27-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=Yanmar B27"
   },
 
-  {
+{
     title: "Mitsubishi MM30 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/yzyUEDI.jpeg",
     pageLink: "https://www.sciconmachinery.com/mitsubishi-mm30-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=MitsubishiMM30"
@@ -187,8 +221,9 @@ const excavators = [
 {
     title: "Komatsu PC20 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/Vk1LJr3.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-pc20-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KomatsuPC20"
@@ -197,28 +232,32 @@ const excavators = [
 {
     title: "Yanmar VIO30 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/befEDxB.jpeg",
     pageLink: "https://www.sciconmachinery.com/yanmar-vio30-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=YanmarVIO30"
   },
 
+
   {
     title: "Hitachi Airman AX25 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/4fjgdso.jpeg",
     pageLink: "https://www.sciconmachinery.com/hitachi-airman-ax25-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=HitachiAirmanAX25"
   },
 
-  {
+{
     title: "Hitachi EX30U Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/GJ5OuRd.jpeg",
     pageLink: "https://www.sciconmachinery.com/hitachi-ex30u-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=HitachiEX30U"
@@ -227,20 +266,21 @@ const excavators = [
 {
     title: "Kubota KH50 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Popular / 2–3 Ton",
+    type: "mini",
     segment: "popular",
+    label: "Most Popular (2–3 Ton)",
     img: "https://i.imgur.com/WSodf70.jpeg",
     pageLink: "https://www.sciconmachinery.com/kubota-kh50-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KubotaKH50"
   },
 
-
   // 🔹 Power
   {
     title: "Komatsu PC30 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/k3mDNlj.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-pc30-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=Komatsu PC30"
@@ -249,8 +289,9 @@ const excavators = [
   {
     title: "Komatsu PC40R Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/LK3qwDJ.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-pc40r-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=Komatsu PC40R"
@@ -259,29 +300,32 @@ const excavators = [
 {
     title: "Komatsu PC40R (Roof) Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/VFIhhaQ.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-pc40r-roof-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KomatsuPC40Rroof"
   },
 
 
-  {
+{
     title: "IHI IS40F Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/6HW1oga.jpeg",
     pageLink: "https://www.sciconmachinery.com/ihi-is40f-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=IHIIS40F"
   },
 
-  {
+{
     title: "Kubota U45 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/y1J2LjJ.jpeg",
     pageLink: "https://www.sciconmachinery.com/kubota-u45-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=KubotaU45"
@@ -290,30 +334,34 @@ const excavators = [
 {
     title: "Yanmar VIO50 Mini Excavator",
     price: "Whatsapp us for Price",
-    label: "Power / 3–5 Ton",
+    type: "mini",
     segment: "power",
+    label: "High Power (3–5 Ton)",
     img: "https://i.imgur.com/Wl9Yavp.jpeg",
     pageLink: "https://www.sciconmachinery.com/yanmar-vio50-mini-excavator",
     whatsapp: "https://wa.me/601154224312?text=YanmarVIO50"
   },
 
 
-  // 🔹 Mid
+
+  // 🔹 MID SIZE
   {
     title: "Hitachi ZAXIS 75 Excavator",
     price: "Whatsapp us for Price",
-    label: "Mid / 6–10 Ton",
+    type: "mid",
     segment: "mid",
+    label: "Mid Size (6–10 Ton)",
     img: "https://i.imgur.com/PXfJPpO.jpeg",
     pageLink: "https://www.sciconmachinery.com/hitachi-zaxis75-excavator",
     whatsapp: "https://wa.me/601154224312?text=HitachiZAXIS75"
   },
 
-  {
+{
     title: "Hitachi UH045 Excavator",
     price: "Whatsapp us for Price",
-    label: "Mid / 6–10 Ton",
+    type: "mid",
     segment: "mid",
+    label: "Mid Size (6–10 Ton)",
     img: "https://i.imgur.com/hgiuMMb.jpeg",
     pageLink: "https://www.sciconmachinery.com/hitachi-uh045-excavator",
     whatsapp: "https://wa.me/601154224312?text=HitachiUH045"
@@ -322,92 +370,102 @@ const excavators = [
 {
     title: "Sumitomo SH100-2 Excavator",
     price: "Whatsapp us for Price",
-    label: "Mid / 6–10 Ton",
+    type: "mid",
     segment: "mid",
+    label: "Mid Size (6–10 Ton)",
     img: "https://i.imgur.com/V9REGO6.jpeg",
     pageLink: "https://www.sciconmachinery.com/sumitomo-sh100-excavator",
     whatsapp: "https://wa.me/601154224312?text=SumitomoSH100"
   },
 
 
-  // 🔹 Large
-  {
-    title: "Sumitomo S265FJ2 Excavator",
-    price: "Whatsapp us for Price",
-    label: "Large / 20+ Ton",
-    segment: "large",
-    img: "https://i.imgur.com/m2xVYZ5.jpeg",
-    pageLink: "https://www.sciconmachinery.com/sumitomo-s265fj2-excavator",
-    whatsapp: "https://wa.me/601154224312?text=Sumitomo%20S265FJ2"
-  },
+// 🔹 Large
+{
+  title: "Sumitomo S265FJ2 Excavator",
+  price: "Whatsapp us for Price",
+  type: "large",
+  segment: "large",
+  label: "Heavy Duty (20+ Ton)",
+  img: "https://i.imgur.com/m2xVYZ5.jpeg",
+  pageLink: "https://www.sciconmachinery.com/sumitomo-s265fj2-excavator",
+  whatsapp: "https://wa.me/601154224312?text=SumitomoS265FJ2"
+},
 
-  // 🔹 Special
-  {
-    title: "Sumitomo SH75X3B Special Excavator",
-    price: "Whatsapp us for Price",
-    label: "Special Purpose",
-    segment: "special",
-    img: "https://i.imgur.com/D1zZMkZ.jpeg",
-    pageLink: "https://www.sciconmachinery.com/sumitomo-sh75x3b-excavator",
-    whatsapp: "https://wa.me/601154224312?text=Sumitomo%20SH75X3B"
-  },
+// 🔹 Special
+{
+  title: "Sumitomo SH75X3B Special Excavator",
+  price: "Whatsapp us for Price",
+  type: "mid",
+  segment: "special",
+  label: "Special Purpose (Forestry / Plantation / Demolition)",
+  img: "https://i.imgur.com/D1zZMkZ.jpeg",
+  pageLink: "https://www.sciconmachinery.com/sumitomo-sh75x3b-excavator",
+  whatsapp: "https://wa.me/601154224312?text=SH75X3B"
+},
 
-  // 🔹 Dozer
+  // 🔹 DOZER
   {
     title: "Komatsu D21A Bulldozer",
     price: "Whatsapp us for Price",
-    label: "Dozer",
+    type: "dozer",
     segment: "dozer",
+    label: "Bulldozer",
     img: "https://i.imgur.com/HGRkllt.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-d21a-bulldozer",
     whatsapp: "https://wa.me/601154224312?text=KomatsuD21ABulldozer"
   },
 
-  {
+{
     title: "Komatsu D20A Bulldozer",
     price: "Whatsapp us for Price",
-    label: "Dozer",
+    type: "dozer",
     segment: "dozer",
+    label: "Bulldozer",
     img: "https://i.imgur.com/kvmKjiB.jpeg",
     pageLink: "https://www.sciconmachinery.com/komatsu-d20a-bulldozer",
     whatsapp: "https://wa.me/601154224312?text=KomatsuD20ABulldozer"
   }
 ];
-const grid = document.getElementById('excavator-grid');
 
-function getRandomItems(array, count) {
-  const shuffled = array.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
+const track = document.getElementById("track");
 
-function renderItems() {
-  grid.innerHTML = "";
-  const randomItems = getRandomItems(excavators, 3);
+function createCard(item) {
+  return `
+    <div class="card" data-type="${item.type}" data-segment="${item.segment}">
+      
+      <a href="${item.pageLink}" target="_blank">
+        <div class="card-img">
+          <img src="${item.img}" alt="${item.title}">
+        </div>
+      </a>
 
-  randomItems.forEach(item => {
-    const card = `
-      <div class="card">
-        <a href="${item.pageLink}" target="_blank">
-          <div class="card-img">
-            <img src="${item.img}" alt="${item.title}">
-          </div>
-        </a>
-        <div class="card-content">
-          <div class="tag">${item.label}</div>
-          <h3>${item.title}</h3>
-          <p>${item.price}</p>
-          <div class="btn-row">
-            <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
-            <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
-          </div>
+      <div class="card-content">
+        <div class="tag">${item.label}</div>
+        <div class="segment">${item.segment}</div>
+
+        <h3>${item.title}</h3>
+        <p>${item.price}</p>
+
+        <div class="btn-row">
+          <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
+          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
         </div>
       </div>
-    `;
-    grid.insertAdjacentHTML('beforeend', card);
-  });
+
+    </div>
+  `;
 }
 
-renderItems();
+function render() {
+  let html = "";
+
+  excavators.forEach(i => html += createCard(i));
+  excavators.forEach(i => html += createCard(i));
+
+  track.innerHTML = html;
+}
+
+render();
 </script>
 
 </body>
