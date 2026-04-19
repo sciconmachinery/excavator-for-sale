@@ -32,10 +32,10 @@ body {
   animation-play-state: paused;
 }
 
-/* animation */
+/* smooth infinite scroll */
 @keyframes scroll {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to { transform: translateX(-100%); }
 }
 
 /* CARD */
@@ -84,8 +84,12 @@ body {
 
 /* segment badge */
 .segment {
-  font-size: 11px;
-  color: #999;
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 10px;
+  border-radius: 999px;
+  background: #eaeaea;
+  color: #555;
   margin-bottom: 6px;
   text-transform: uppercase;
 }
@@ -138,7 +142,7 @@ body {
 
 <script>
 const excavators = [
-    // 🔹 Budget
+  // 🔹 Budget
   {
     title: "IHI iS4GX Mini Excavator",
     price: "Whatsapp us for Price • 500kg",
@@ -425,14 +429,24 @@ const excavators = [
     pageLink: "https://www.sciconmachinery.com/komatsu-d20a-bulldozer",
     whatsapp: "https://wa.me/601154224312?text=KomatsuD20ABulldozer"
   }
+
 ];
+
+/* shuffle function */
+function shuffle(array) {
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 const track = document.getElementById("track");
 
 function createCard(item) {
   return `
-    <div class="card" data-type="${item.type}" data-segment="${item.segment}">
-      
+    <div class="card">
       <a href="${item.pageLink}" target="_blank">
         <div class="card-img">
           <img src="${item.img}" alt="${item.title}">
@@ -451,16 +465,18 @@ function createCard(item) {
           <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
         </div>
       </div>
-
     </div>
   `;
 }
 
 function render() {
+  const shuffled = shuffle(excavators);
+
   let html = "";
 
-  excavators.forEach(i => html += createCard(i));
-  excavators.forEach(i => html += createCard(i));
+  // duplicate for smooth infinite scroll
+  shuffled.forEach(i => html += createCard(i));
+  shuffled.forEach(i => html += createCard(i));
 
   track.innerHTML = html;
 }
