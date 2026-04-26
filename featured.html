@@ -3,94 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scicon Machinery</title>
+<title>Excavators for Sale | Scicon Machinery</title>
 
 <style>
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f6f8;
+  margin: 0;
 }
 
-/* OUTER CONTAINER (IMPORTANT FOR MOBILE) */
+/* SCROLL */
 .scroll-wrapper {
   overflow: hidden;
   width: 100%;
-  padding: 20px 10px;
-  touch-action: pan-y;
+  padding: 30px 0;
 }
 
-/* TRACK */
 .scroll-track {
   display: flex;
-  gap: 16px;
+  gap: 24px;
   width: max-content;
   will-change: transform;
 }
 
-/* CARD */
-.card {
-  flex: 0 0 auto;
-  width: 220px;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+/* pause */
+.scroll-wrapper:hover .scroll-track {
+  animation-play-state: paused;
 }
 
-.card img {
+/* CARD */
+.card {
+  min-width: 260px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+.card-img {
   width: 100%;
-  height: 150px;
+  height: 180px;
+  overflow: hidden;
+}
+
+.card-img img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
+/* CONTENT */
 .card-content {
-  padding: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .tag {
   font-size: 12px;
   color: #666;
+  margin-bottom: 6px;
 }
 
 .segment {
   display: inline-block;
+  padding: 4px 8px;
   font-size: 10px;
-  background: #eee;
-  padding: 3px 7px;
   border-radius: 999px;
-  margin: 6px 0;
+  background: #eaeaea;
+  color: #555;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
+.card h3 {
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+
+.card p {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* BUTTONS */
 .btn-row {
+  margin-top: auto;
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 8px;
 }
 
 .btn {
   flex: 1;
-  font-size: 11px;
-  padding: 7px;
+  padding: 10px;
+  border-radius: 8px;
   text-align: center;
+  font-size: 13px;
+  font-weight: bold;
   text-decoration: none;
-  border-radius: 6px;
 }
 
-.info-btn { background: #eee; color: #333; }
-.wa-btn { background: #25D366; color: #fff; }
+.info-btn {
+  background: #f1f1f1;
+  color: #333;
+}
+
+.wa-btn {
+  background: #25D366;
+  color: white;
+}
 </style>
 </head>
 
 <body>
 
-<div class="scroll-wrapper" id="wrapper">
+<div class="scroll-wrapper">
   <div class="scroll-track" id="track"></div>
 </div>
 
 <script>
 
-/* ================= DATA ================= */
+/* ================= YOUR ORIGINAL DATA (UNCHANGED) ================= */
 const excavators = [
   // 🔹 Budget
   {
@@ -404,82 +447,62 @@ const excavators = [
 
 ];
 
-/* ================= SHUFFLE ================= */
+/* ================= FAST SHUFFLE ================= */
 function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-/* ================= BUILD CARD ================= */
+const track = document.getElementById("track");
+
+/* ================= FAST DOM RENDER ================= */
 function createCard(item) {
-  return `
-  <div class="card">
-    <img src="${item.img}" loading="lazy" decoding="async">
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <a href="${item.pageLink}" target="_blank">
+      <div class="card-img">
+        <img src="${item.img}" loading="lazy" decoding="async">
+      </div>
+    </a>
 
     <div class="card-content">
-      <div class="tag">${item.name}</div>
+      <div class="tag">${item.label}</div>
       <div class="segment">${item.segment}</div>
 
+      <h3>${item.title}</h3>
+      <p>${item.price}</p>
+
       <div class="btn-row">
-        <a class="btn info-btn" href="${item.page}">Details</a>
-        <a class="btn wa-btn" href="${item.whatsapp}">WhatsApp</a>
+        <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
+        <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
       </div>
     </div>
-  </div>`;
+  `;
+
+  return div;
 }
 
-/* ================= RENDER RANDOM LIST ================= */
-const track = document.getElementById("track");
-const wrapper = document.getElementById("wrapper");
-
+/* ================= OPTIMISED BUILD ================= */
 function render() {
-  let items = [];
+  const fragment = document.createDocumentFragment();
 
-  // build long random sequence for smooth loop
-  for (let i = 0; i < 6; i++) {
-    items = items.concat(shuffle(excavators));
+  const data = shuffle(excavators);
+  const full = data.concat(data); // smooth scroll loop
+
+  for (const item of full) {
+    fragment.appendChild(createCard(item));
   }
 
-  track.innerHTML = items.map(createCard).join("");
+  track.appendChild(fragment);
 }
 
 render();
-
-/* ================= SMOOTH AUTO SCROLL ENGINE ================= */
-let speed = 50; // px per second (adjust here)
-let position = 0;
-let lastTime = 0;
-let paused = false;
-
-function animate(time) {
-  if (!lastTime) lastTime = time;
-
-  const delta = (time - lastTime) / 1000;
-  lastTime = time;
-
-  if (!paused) {
-    position += speed * delta;
-
-    const halfWidth = track.scrollWidth / 2;
-
-    if (position >= halfWidth) {
-      position = 0;
-      render(); // reshuffle for fresh random feel
-    }
-
-    track.style.transform = `translate3d(${-position}px,0,0)`;
-  }
-
-  requestAnimationFrame(animate);
-}
-
-requestAnimationFrame(animate);
-
-/* ================= PAUSE ON INTERACTION ================= */
-wrapper.addEventListener("mouseenter", () => paused = true);
-wrapper.addEventListener("mouseleave", () => paused = false);
-
-wrapper.addEventListener("touchstart", () => paused = true, {passive:true});
-wrapper.addEventListener("touchend", () => paused = false, {passive:true});
 
 </script>
 
