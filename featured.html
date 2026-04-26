@@ -12,16 +12,18 @@ body {
   background: #f5f6f8;
 }
 
-/* WRAPPER */
+/* OUTER CONTAINER (IMPORTANT FOR MOBILE) */
 .scroll-wrapper {
   overflow: hidden;
-  padding: 25px 15px;
+  width: 100%;
+  padding: 20px 10px;
+  touch-action: pan-y;
 }
 
 /* TRACK */
 .scroll-track {
   display: flex;
-  gap: 18px;
+  gap: 16px;
   width: max-content;
   will-change: transform;
 }
@@ -29,51 +31,50 @@ body {
 /* CARD */
 .card {
   flex: 0 0 auto;
-  width: 240px;
+  width: 220px;
   background: #fff;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: 0.2s ease;
-}
-
-.card:hover {
-  transform: scale(1.04);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .card img {
   width: 100%;
-  height: 160px;
+  height: 150px;
   object-fit: cover;
 }
 
 .card-content {
-  padding: 12px;
+  padding: 10px;
 }
 
-.tag { font-size: 12px; color: #666; }
+.tag {
+  font-size: 12px;
+  color: #666;
+}
+
 .segment {
+  display: inline-block;
   font-size: 10px;
   background: #eee;
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 999px;
-  display: inline-block;
   margin: 6px 0;
 }
 
 .btn-row {
   display: flex;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .btn {
   flex: 1;
-  padding: 8px;
-  font-size: 12px;
-  border-radius: 6px;
+  font-size: 11px;
+  padding: 7px;
   text-align: center;
   text-decoration: none;
+  border-radius: 6px;
 }
 
 .info-btn { background: #eee; color: #333; }
@@ -405,23 +406,18 @@ const excavators = [
 
 /* ================= SHUFFLE ================= */
 function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
+  return [...arr].sort(() => Math.random() - 0.5);
 }
 
-/* ================= BUILD CARDS ================= */
-const track = document.getElementById("track");
-const wrapper = document.getElementById("wrapper");
-
+/* ================= BUILD CARD ================= */
 function createCard(item) {
   return `
   <div class="card">
-    <img src="${item.img}" loading="lazy">
+    <img src="${item.img}" loading="lazy" decoding="async">
 
     <div class="card-content">
       <div class="tag">${item.name}</div>
       <div class="segment">${item.segment}</div>
-
-      <p>${item.price}</p>
 
       <div class="btn-row">
         <a class="btn info-btn" href="${item.page}">Details</a>
@@ -431,42 +427,46 @@ function createCard(item) {
   </div>`;
 }
 
-/* ================= LOAD ITEMS ================= */
-function load() {
+/* ================= RENDER RANDOM LIST ================= */
+const track = document.getElementById("track");
+const wrapper = document.getElementById("wrapper");
+
+function render() {
   let items = [];
 
-  // duplicate shuffled list for seamless loop
-  for (let i = 0; i < 5; i++) {
-    items = items.concat(shuffle([...excavators]));
+  // build long random sequence for smooth loop
+  for (let i = 0; i < 6; i++) {
+    items = items.concat(shuffle(excavators));
   }
 
   track.innerHTML = items.map(createCard).join("");
 }
 
-load();
+render();
 
 /* ================= SMOOTH AUTO SCROLL ENGINE ================= */
-let speed = 60; // pixels per second (adjust here)
+let speed = 50; // px per second (adjust here)
 let position = 0;
+let lastTime = 0;
 let paused = false;
-
-let lastTime = null;
 
 function animate(time) {
   if (!lastTime) lastTime = time;
+
   const delta = (time - lastTime) / 1000;
   lastTime = time;
 
   if (!paused) {
     position += speed * delta;
 
-    const maxScroll = track.scrollWidth / 2;
+    const halfWidth = track.scrollWidth / 2;
 
-    if (position >= maxScroll) {
+    if (position >= halfWidth) {
       position = 0;
+      render(); // reshuffle for fresh random feel
     }
 
-    track.style.transform = `translateX(${-position}px)`;
+    track.style.transform = `translate3d(${-position}px,0,0)`;
   }
 
   requestAnimationFrame(animate);
@@ -474,9 +474,12 @@ function animate(time) {
 
 requestAnimationFrame(animate);
 
-/* ================= PAUSE ON HOVER ================= */
+/* ================= PAUSE ON INTERACTION ================= */
 wrapper.addEventListener("mouseenter", () => paused = true);
 wrapper.addEventListener("mouseleave", () => paused = false);
+
+wrapper.addEventListener("touchstart", () => paused = true, {passive:true});
+wrapper.addEventListener("touchend", () => paused = false, {passive:true});
 
 </script>
 
