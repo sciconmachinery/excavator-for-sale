@@ -10,36 +10,29 @@ body {
   font-family: Arial, sans-serif;
   background: #f5f6f8;
   margin: 0;
-
-  /* ✅ FIX: stop huge horizontal dragging */
-  overflow-x: hidden;
+  overflow-x: hidden; /* 🔥 stops drag space issue */
 }
 
-/* SCROLL WRAPPER */
+/* WRAPPER */
 .scroll-wrapper {
   width: 100%;
-  max-width: 100vw;
   overflow: hidden;
-  padding: 30px 0;
+  padding: 20px 0;
 }
 
-/* SCROLL TRACK */
+/* TRACK */
 .scroll-track {
   display: flex;
-  gap: 24px;
+  flex-wrap: nowrap;
+  gap: 18px;
 
-  /* ❌ removed max-content (causes huge page width issue) */
-  width: fit-content;
+  /* 🔥 IMPORTANT: prevent page explosion */
+  width: max-content;
 
-  animation: scroll 110s linear infinite;
+  animation: scroll 90s linear infinite;
 }
 
-/* pause on hover */
-.scroll-wrapper:hover .scroll-track {
-  animation-play-state: paused;
-}
-
-/* smooth infinite scroll */
+/* smooth loop */
 @keyframes scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -47,25 +40,21 @@ body {
 
 /* CARD */
 .card {
-  min-width: 260px;
+  flex: 0 0 auto;
+  width: 260px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: 0.25s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  flex: 0 0 auto;
+  transition: 0.2s;
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
 }
 
 /* IMAGE */
 .card-img {
-  width: 100%;
   height: 180px;
   overflow: hidden;
 }
@@ -78,55 +67,49 @@ body {
 
 /* CONTENT */
 .card-content {
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  padding: 12px;
 }
 
 .tag {
   font-size: 12px;
   color: #666;
-  margin-bottom: 6px;
 }
 
 .segment {
   display: inline-block;
-  padding: 4px 8px;
   font-size: 10px;
+  background: #eee;
+  padding: 3px 7px;
   border-radius: 999px;
-  background: #eaeaea;
-  color: #555;
-  margin-bottom: 6px;
+  margin: 6px 0;
   text-transform: uppercase;
 }
 
 .card h3 {
-  font-size: 15px;
-  margin: 0 0 6px;
+  font-size: 14px;
+  margin: 5px 0;
 }
 
 .card p {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
-  margin-bottom: 10px;
 }
 
 /* BUTTONS */
 .btn-row {
-  margin-top: auto;
   display: flex;
   gap: 8px;
+  margin-top: 10px;
 }
 
 .btn {
   flex: 1;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 9px;
+  font-size: 12px;
   text-align: center;
-  font-size: 13px;
-  font-weight: bold;
+  border-radius: 8px;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .info-btn {
@@ -136,28 +119,20 @@ body {
 
 .wa-btn {
   background: #25D366;
-  color: white;
+  color: #fff;
 }
 
-/* 📱 MOBILE FIX */
+/* =========================
+   📱 MOBILE FIX (IMPORTANT)
+========================= */
 @media (max-width: 768px) {
 
-  .scroll-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
   .scroll-track {
-    animation: none;
-    width: auto;
+    animation: scroll 110s linear infinite; /* slower = smoother */
   }
 
   .card {
-    min-width: 180px;
-  }
-
-  .scroll-wrapper::-webkit-scrollbar {
-    display: none;
+    width: 80vw; /* 🔥 FIX: prevents half-card issue */
   }
 }
 </style>
@@ -524,7 +499,7 @@ function render() {
 
   let html = "";
 
-  // duplicate for smooth desktop scroll
+  // duplicate for infinite smooth scroll
   shuffled.forEach(i => html += createCard(i));
   shuffled.forEach(i => html += createCard(i));
 
