@@ -7,43 +7,45 @@
 
 <style>
 body {
+  margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f6f8;
-  margin: 0;
   overflow-x: hidden;
 }
 
 /* VIEWPORT */
-.scroll-wrapper {
+.wrapper {
   width: 100%;
   overflow: hidden;
   padding: 30px 0;
 }
 
-/* TRACK */
-.scroll-track {
+/* TRACK (IMPORTANT: NO FLEX GAP ISSUES) */
+.track {
   display: flex;
-  gap: 20px;
   width: max-content;
   will-change: transform;
 }
 
+/* ITEM WRAPPER (THIS FIXES MOBILE CUTTING) */
+.item {
+  flex: 0 0 auto;
+  padding: 0 10px; /* spacing instead of flex gap */
+  box-sizing: border-box;
+}
+
 /* CARD */
 .card {
-  flex: 0 0 auto;
-  width: 260px;
+  width: 280px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* IMAGE */
 .card-img {
   height: 180px;
-  overflow: hidden;
 }
 
 .card-img img {
@@ -55,70 +57,55 @@ body {
 /* CONTENT */
 .card-content {
   padding: 14px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
 }
 
 .tag {
   font-size: 12px;
   color: #666;
-  margin-bottom: 6px;
 }
 
 .segment {
+  font-size: 10px;
   display: inline-block;
   padding: 4px 8px;
-  font-size: 10px;
-  border-radius: 999px;
   background: #eaeaea;
-  color: #555;
-  margin-bottom: 6px;
+  border-radius: 999px;
+  margin: 6px 0;
   text-transform: uppercase;
 }
 
 .card h3 {
   font-size: 15px;
-  margin: 0 0 6px;
+  margin: 6px 0;
 }
 
 .card p {
-  font-size: 16px;
   font-weight: bold;
-  margin-bottom: 10px;
 }
 
-/* BUTTONS */
 .btn-row {
-  margin-top: auto;
   display: flex;
   gap: 8px;
+  margin-top: 10px;
 }
 
 .btn {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
   text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
   font-size: 13px;
   font-weight: bold;
-  text-decoration: none;
 }
 
-.info-btn {
-  background: #f1f1f1;
-  color: #333;
-}
+.info-btn { background: #f1f1f1; color: #333; }
+.wa-btn { background: #25D366; color: white; }
 
-.wa-btn {
-  background: #25D366;
-  color: white;
-}
-
-/* 📱 MOBILE FIX */
+/* 📱 MOBILE FIX (THIS IS THE KEY) */
 @media (max-width: 768px) {
   .card {
-    width: 78vw;
+    width: 85vw; /* ensures FULL visibility */
   }
 }
 </style>
@@ -126,12 +113,12 @@ body {
 
 <body>
 
-<div class="scroll-wrapper">
-  <div class="scroll-track" id="track"></div>
+<div class="wrapper">
+  <div class="track" id="track"></div>
 </div>
 
 <script>
-const excavators = [
+const data = [
   // 🔹 Budget
   {
     title: "IHI iS4GX Mini Excavator",
@@ -446,54 +433,43 @@ const excavators = [
 
 const track = document.getElementById("track");
 
-function createCard(item) {
+function card(item) {
   return `
-    <div class="card">
-      <div class="card-img">
-        <img src="${item.img}" alt="">
-      </div>
+    <div class="item">
+      <div class="card">
+        <div class="card-img">
+          <img src="${item.img}">
+        </div>
 
-      <div class="card-content">
-        <div class="tag">${item.label}</div>
-        <div class="segment">${item.segment}</div>
+        <div class="card-content">
+          <div class="tag">${item.label}</div>
+          <div class="segment">${item.segment}</div>
+          <h3>${item.title}</h3>
+          <p>${item.price}</p>
 
-        <h3>${item.title}</h3>
-        <p>${item.price}</p>
-
-        <div class="btn-row">
-          <a class="btn info-btn" href="${item.pageLink}">Details</a>
-          <a class="btn wa-btn" href="${item.whatsapp}">WhatsApp</a>
+          <div class="btn-row">
+            <a class="btn info-btn" href="${item.pageLink}">Details</a>
+            <a class="btn wa-btn" href="${item.whatsapp}">WhatsApp</a>
+          </div>
         </div>
       </div>
     </div>
   `;
 }
 
-/* shuffle */
-function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
-}
+/* BUILD DOUBLE LIST (for seamless scroll) */
+track.innerHTML = [...data, ...data].map(card).join("");
 
-/* BUILD + DUPLICATE */
-let speed = 0.5;
+/* REAL PIXEL ANIMATION ENGINE */
 let x = 0;
+const speed = 0.6;
 
-function setup() {
-  const data = shuffle(excavators);
-
-  // duplicate for seamless loop
-  track.innerHTML = [...data, ...data].map(createCard).join("");
-
-  requestAnimationFrame(animate);
-}
-
-/* REAL pixel-based infinite scroll */
 function animate() {
   x -= speed;
 
-  const halfWidth = track.scrollWidth / 2;
+  const half = track.scrollWidth / 2;
 
-  if (Math.abs(x) >= halfWidth) {
+  if (Math.abs(x) >= half) {
     x = 0;
   }
 
@@ -502,7 +478,7 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-setup();
+animate();
 </script>
 
 </body>
