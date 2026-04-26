@@ -10,32 +10,33 @@ body {
   font-family: Arial, sans-serif;
   background: #f5f6f8;
   margin: 0;
-  overflow-x: hidden; /* 🔥 stops drag space issue */
+  overflow-x: hidden;
 }
 
 /* WRAPPER */
 .scroll-wrapper {
   width: 100%;
   overflow: hidden;
-  padding: 20px 0;
+  padding: 30px 0;
 }
 
 /* TRACK */
 .scroll-track {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 18px;
-
-  /* 🔥 IMPORTANT: prevent page explosion */
+  gap: 24px;
   width: max-content;
-
-  animation: scroll 90s linear infinite;
+  will-change: transform;
+  animation: scroll 60s linear infinite;
 }
 
-/* smooth loop */
+/* 🔥 FIXED ANIMATION (NO MORE -100%) */
 @keyframes scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* CARD */
@@ -46,11 +47,6 @@ body {
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
 }
 
 /* IMAGE */
@@ -67,7 +63,7 @@ body {
 
 /* CONTENT */
 .card-content {
-  padding: 12px;
+  padding: 14px;
 }
 
 .tag {
@@ -86,12 +82,12 @@ body {
 }
 
 .card h3 {
-  font-size: 14px;
+  font-size: 15px;
   margin: 5px 0;
 }
 
 .card p {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -104,12 +100,12 @@ body {
 
 .btn {
   flex: 1;
-  padding: 9px;
-  font-size: 12px;
+  padding: 10px;
   text-align: center;
   border-radius: 8px;
-  text-decoration: none;
+  font-size: 13px;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .info-btn {
@@ -119,7 +115,7 @@ body {
 
 .wa-btn {
   background: #25D366;
-  color: #fff;
+  color: white;
 }
 
 /* =========================
@@ -128,11 +124,12 @@ body {
 @media (max-width: 768px) {
 
   .scroll-track {
-    animation: scroll 110s linear infinite; /* slower = smoother */
+    gap: 16px;
+    animation: scroll 90s linear infinite; /* slower = smoother */
   }
 
   .card {
-    width: 80vw; /* 🔥 FIX: prevents half-card issue */
+    width: 80vw; /* 🔥 THIS fixes half-card issue */
   }
 }
 </style>
@@ -499,7 +496,7 @@ function render() {
 
   let html = "";
 
-  // duplicate for infinite smooth scroll
+  // duplicate for infinite loop
   shuffled.forEach(i => html += createCard(i));
   shuffled.forEach(i => html += createCard(i));
 
