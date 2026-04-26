@@ -16,31 +16,32 @@ body {
 .scroll-wrapper {
   overflow: hidden;
   width: 100%;
-  padding: 30px 0;
+  padding: 20px 0;
 }
 
 /* SCROLL TRACK */
 .scroll-track {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   width: max-content;
-  animation: scroll 110s linear infinite;
+  animation: scroll 90s linear infinite;
 }
 
-/* pause on hover */
+/* pause on hover (desktop) */
 .scroll-wrapper:hover .scroll-track {
   animation-play-state: paused;
 }
 
-/* smooth infinite scroll */
+/* smooth scroll */
 @keyframes scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-100%); }
 }
 
-/* CARD (DESKTOP) */
+/* CARD (DESKTOP DEFAULT) */
 .card {
   min-width: 260px;
+  max-width: 260px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
@@ -48,11 +49,6 @@ body {
   flex-direction: column;
   transition: 0.25s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
 }
 
 /* IMAGE */
@@ -82,7 +78,6 @@ body {
   margin-bottom: 6px;
 }
 
-/* segment badge */
 .segment {
   display: inline-block;
   padding: 4px 8px;
@@ -133,38 +128,35 @@ body {
 }
 
 /* =========================
-   📱 MOBILE FIX (SMALLER CARDS)
-========================= */
+   🔥 MOBILE FIX (IMPORTANT)
+   ========================= */
 @media (max-width: 768px) {
 
+  .scroll-track {
+    gap: 12px;
+    animation-duration: 60s; /* faster on mobile */
+  }
+
   .card {
-    min-width: 170px;   /* 🔥 smaller card */
+    min-width: 78vw;   /* KEY FIX: full card visible */
+    max-width: 78vw;
   }
 
   .card-img {
-    height: 120px;      /* reduce height */
-  }
-
-  .card-content {
-    padding: 10px;
+    height: 150px; /* slightly smaller */
   }
 
   .card h3 {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .card p {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .btn {
     padding: 8px;
-    font-size: 11px;
-  }
-
-  .segment {
-    font-size: 9px;
-    padding: 3px 6px;
+    font-size: 12px;
   }
 }
 </style>
@@ -490,7 +482,6 @@ const excavators = [
 
 ];
 
-/* shuffle */
 function shuffle(array) {
   let arr = array.slice();
   for (let i = arr.length - 1; i > 0; i--) {
@@ -502,13 +493,12 @@ function shuffle(array) {
 
 const track = document.getElementById("track");
 
-/* create card */
 function createCard(item) {
   return `
     <div class="card">
       <a href="${item.pageLink}" target="_blank">
         <div class="card-img">
-          <img src="${item.img}" alt="${item.title}">
+          <img src="${item.img}">
         </div>
       </a>
 
@@ -528,9 +518,17 @@ function createCard(item) {
   `;
 }
 
-/* duplicate for infinite scroll */
-const data = [...shuffle(excavators), ...shuffle(excavators)];
-track.innerHTML = data.map(createCard).join("");
+function render() {
+  const shuffled = shuffle(excavators);
+  let html = "";
+
+  shuffled.forEach(i => html += createCard(i));
+  shuffled.forEach(i => html += createCard(i));
+
+  track.innerHTML = html;
+}
+
+render();
 </script>
 
 </body>
