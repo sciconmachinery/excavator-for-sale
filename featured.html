@@ -12,23 +12,30 @@ body {
   margin: 0;
 }
 
-/* SCROLL */
+/* SCROLL CONTAINER */
 .scroll-wrapper {
   overflow: hidden;
   width: 100%;
   padding: 30px 0;
 }
 
+/* SCROLL TRACK */
 .scroll-track {
   display: flex;
   gap: 24px;
   width: max-content;
-  will-change: transform;
+  animation: scroll 110s linear infinite;
 }
 
-/* pause */
+/* pause on hover */
 .scroll-wrapper:hover .scroll-track {
   animation-play-state: paused;
+}
+
+/* smooth infinite scroll */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
 }
 
 /* CARD */
@@ -39,8 +46,8 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   transition: 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .card:hover {
@@ -48,6 +55,7 @@ body {
   box-shadow: 0 12px 25px rgba(0,0,0,0.12);
 }
 
+/* IMAGE */
 .card-img {
   width: 100%;
   height: 180px;
@@ -74,6 +82,7 @@ body {
   margin-bottom: 6px;
 }
 
+/* segment badge */
 .segment {
   display: inline-block;
   padding: 4px 8px;
@@ -132,8 +141,6 @@ body {
 </div>
 
 <script>
-
-/* ================= YOUR ORIGINAL DATA (UNCHANGED) ================= */
 const excavators = [
   // 🔹 Budget
   {
@@ -445,65 +452,59 @@ const excavators = [
     whatsapp: "https://wa.me/601154224312?text=KomatsuD20ABulldozer"
   }
 
+
 ];
 
-/* ================= FAST SHUFFLE ================= */
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = (Math.random() * (i + 1)) | 0;
-    [a[i], a[j]] = [a[j], a[i]];
+/* shuffle function */
+function shuffle(array) {
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return a;
+  return arr;
 }
 
 const track = document.getElementById("track");
 
-/* ================= FAST DOM RENDER ================= */
 function createCard(item) {
-  const div = document.createElement("div");
-  div.className = "card";
+  return `
+    <div class="card">
+      <a href="${item.pageLink}" target="_blank">
+        <div class="card-img">
+          <img src="${item.img}" alt="${item.title}">
+        </div>
+      </a>
 
-  div.innerHTML = `
-    <a href="${item.pageLink}" target="_blank">
-      <div class="card-img">
-        <img src="${item.img}" loading="lazy" decoding="async">
-      </div>
-    </a>
+      <div class="card-content">
+        <div class="tag">${item.label}</div>
+        <div class="segment">${item.segment}</div>
 
-    <div class="card-content">
-      <div class="tag">${item.label}</div>
-      <div class="segment">${item.segment}</div>
+        <h3>${item.title}</h3>
+        <p>${item.price}</p>
 
-      <h3>${item.title}</h3>
-      <p>${item.price}</p>
-
-      <div class="btn-row">
-        <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
-        <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
+        <div class="btn-row">
+          <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
+          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
+        </div>
       </div>
     </div>
   `;
-
-  return div;
 }
 
-/* ================= OPTIMISED BUILD ================= */
 function render() {
-  const fragment = document.createDocumentFragment();
+  const shuffled = shuffle(excavators);
 
-  const data = shuffle(excavators);
-  const full = data.concat(data); // smooth scroll loop
+  let html = "";
 
-  for (const item of full) {
-    fragment.appendChild(createCard(item));
-  }
+  // duplicate for smooth infinite scroll
+  shuffled.forEach(i => html += createCard(i));
+  shuffled.forEach(i => html += createCard(i));
 
-  track.appendChild(fragment);
+  track.innerHTML = html;
 }
 
 render();
-
 </script>
 
 </body>
