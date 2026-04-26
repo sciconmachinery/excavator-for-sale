@@ -10,43 +10,56 @@ body {
   font-family: Arial, sans-serif;
   background: #f5f6f8;
   margin: 0;
-  overflow-x: hidden;
 }
 
-/* WRAPPER */
+/* SCROLL CONTAINER */
 .scroll-wrapper {
-  width: 100%;
   overflow: hidden;
-  padding: 25px 0;
+  width: 100%;
+  padding: 30px 0;
 }
 
-/* TRACK */
+/* SCROLL TRACK */
 .scroll-track {
   display: flex;
+  gap: 24px;
   width: max-content;
-  will-change: transform;
+  animation: scroll 110s linear infinite;
 }
 
-/* ITEM WRAPPER */
-.item {
-  flex: 0 0 auto;
-  padding: 0 10px;
+/* pause on hover */
+.scroll-wrapper:hover .scroll-track {
+  animation-play-state: paused;
+}
+
+/* smooth infinite scroll */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
 }
 
 /* CARD (DESKTOP) */
 .card {
-  width: 260px;
+  min-width: 260px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  transition: 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
 }
 
 /* IMAGE */
 .card-img {
-  height: 160px;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
 }
 
 .card-img img {
@@ -66,25 +79,28 @@ body {
 .tag {
   font-size: 12px;
   color: #666;
+  margin-bottom: 6px;
 }
 
+/* segment badge */
 .segment {
   display: inline-block;
   padding: 4px 8px;
   font-size: 10px;
-  background: #eaeaea;
   border-radius: 999px;
-  margin: 6px 0;
+  background: #eaeaea;
+  color: #555;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .card h3 {
   font-size: 15px;
-  margin: 6px 0;
+  margin: 0 0 6px;
 }
 
 .card p {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -106,21 +122,27 @@ body {
   text-decoration: none;
 }
 
-.info-btn { background: #f1f1f1; color: #333; }
-.wa-btn { background: #25D366; color: white; }
+.info-btn {
+  background: #f1f1f1;
+  color: #333;
+}
+
+.wa-btn {
+  background: #25D366;
+  color: white;
+}
 
 /* =========================
-   📱 MOBILE FIX (IMPORTANT)
+   📱 MOBILE FIX (SMALLER CARDS)
 ========================= */
 @media (max-width: 768px) {
 
   .card {
-    width: 78vw;      /* 🔥 FIX: prevents half card */
-    max-width: 320px;
+    min-width: 170px;   /* 🔥 smaller card */
   }
 
   .card-img {
-    height: 140px;
+    height: 120px;      /* reduce height */
   }
 
   .card-content {
@@ -128,11 +150,21 @@ body {
   }
 
   .card h3 {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .card p {
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .segment {
+    font-size: 9px;
+    padding: 3px 6px;
   }
 }
 </style>
@@ -140,7 +172,7 @@ body {
 
 <body>
 
-<div class="scroll-wrapper" id="wrapper">
+<div class="scroll-wrapper">
   <div class="scroll-track" id="track"></div>
 </div>
 
@@ -459,33 +491,37 @@ const excavators = [
 ];
 
 /* shuffle */
-function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
+function shuffle(array) {
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 const track = document.getElementById("track");
-const wrapper = document.getElementById("wrapper");
 
-/* build cards */
-function create(item) {
+/* create card */
+function createCard(item) {
   return `
-    <div class="item">
-      <div class="card">
+    <div class="card">
+      <a href="${item.pageLink}" target="_blank">
         <div class="card-img">
-          <img src="${item.img}">
+          <img src="${item.img}" alt="${item.title}">
         </div>
+      </a>
 
-        <div class="card-content">
-          <div class="tag">${item.label}</div>
-          <div class="segment">${item.segment}</div>
+      <div class="card-content">
+        <div class="tag">${item.label}</div>
+        <div class="segment">${item.segment}</div>
 
-          <h3>${item.title}</h3>
-          <p>${item.price}</p>
+        <h3>${item.title}</h3>
+        <p>${item.price}</p>
 
-          <div class="btn-row">
-            <a class="btn info-btn" href="${item.pageLink}">Details</a>
-            <a class="btn wa-btn" href="${item.whatsapp}">WhatsApp</a>
-          </div>
+        <div class="btn-row">
+          <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
+          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
         </div>
       </div>
     </div>
@@ -493,41 +529,8 @@ function create(item) {
 }
 
 /* duplicate for infinite scroll */
-track.innerHTML =
-  [...shuffle(excavators), ...shuffle(excavators)]
-  .map(create)
-  .join("");
-
-/* =========================
-   🚀 AUTO SCROLL ENGINE
-========================= */
-let x = 0;
-const speed = 0.6;
-let paused = false;
-
-function animate() {
-  if (!paused) {
-    x -= speed;
-
-    const half = track.scrollWidth / 2;
-    if (Math.abs(x) >= half) x = 0;
-
-    track.style.transform = `translateX(${x}px)`;
-  }
-
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-/* PAUSE ON HOVER (DESKTOP ONLY) */
-wrapper.addEventListener("mouseenter", () => {
-  paused = true;
-});
-
-wrapper.addEventListener("mouseleave", () => {
-  paused = false;
-});
+const data = [...shuffle(excavators), ...shuffle(excavators)];
+track.innerHTML = data.map(createCard).join("");
 </script>
 
 </body>
