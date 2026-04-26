@@ -14,23 +14,23 @@ body {
 }
 
 /* VIEWPORT */
-.wrapper {
+.scroll-wrapper {
   width: 100%;
   overflow: hidden;
-  padding: 30px 0;
+  padding: 20px 0;
 }
 
-/* TRACK (IMPORTANT: NO FLEX GAP ISSUES) */
-.track {
+/* TRACK */
+.scroll-track {
   display: flex;
   width: max-content;
   will-change: transform;
 }
 
-/* ITEM WRAPPER (THIS FIXES MOBILE CUTTING) */
+/* ITEM */
 .item {
   flex: 0 0 auto;
-  padding: 0 10px; /* spacing instead of flex gap */
+  padding: 0 10px;
   box-sizing: border-box;
 }
 
@@ -41,9 +41,10 @@ body {
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-/* IMAGE */
 .card-img {
   height: 180px;
 }
@@ -54,9 +55,11 @@ body {
   object-fit: cover;
 }
 
-/* CONTENT */
 .card-content {
   padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .tag {
@@ -81,31 +84,44 @@ body {
 
 .card p {
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .btn-row {
+  margin-top: auto;
   display: flex;
   gap: 8px;
-  margin-top: 10px;
 }
 
 .btn {
   flex: 1;
   padding: 10px;
-  text-align: center;
   border-radius: 8px;
-  text-decoration: none;
+  text-align: center;
   font-size: 13px;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .info-btn { background: #f1f1f1; color: #333; }
 .wa-btn { background: #25D366; color: white; }
 
-/* 📱 MOBILE FIX (THIS IS THE KEY) */
+/* 📱 MOBILE FIX */
 @media (max-width: 768px) {
   .card {
-    width: 85vw; /* ensures FULL visibility */
+    width: 88vw;
+  }
+  .card-img {
+    height: 130px;
+  }
+  .card-content {
+    padding: 10px;
+  }
+  .card h3 {
+    font-size: 14px;
+  }
+  .card p {
+    font-size: 14px;
   }
 }
 </style>
@@ -113,12 +129,12 @@ body {
 
 <body>
 
-<div class="wrapper">
-  <div class="track" id="track"></div>
+<div class="scroll-wrapper" id="wrapper">
+  <div class="scroll-track" id="track"></div>
 </div>
 
 <script>
-const data = [
+const excavators = [
   // 🔹 Budget
   {
     title: "IHI iS4GX Mini Excavator",
@@ -431,8 +447,15 @@ const data = [
 
 ];
 
-const track = document.getElementById("track");
+/* shuffle */
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
 
+const track = document.getElementById("track");
+const wrapper = document.getElementById("wrapper");
+
+/* create card */
 function card(item) {
   return `
     <div class="item">
@@ -444,6 +467,7 @@ function card(item) {
         <div class="card-content">
           <div class="tag">${item.label}</div>
           <div class="segment">${item.segment}</div>
+
           <h3>${item.title}</h3>
           <p>${item.price}</p>
 
@@ -457,28 +481,44 @@ function card(item) {
   `;
 }
 
-/* BUILD DOUBLE LIST (for seamless scroll) */
-track.innerHTML = [...data, ...data].map(card).join("");
+/* duplicate for infinite scroll */
+track.innerHTML = [...shuffle(excavators), ...shuffle(excavators)].map(card).join("");
 
-/* REAL PIXEL ANIMATION ENGINE */
+/* =========================
+   🚀 ANIMATION ENGINE
+========================= */
 let x = 0;
 const speed = 0.6;
+let isPaused = false;
 
 function animate() {
-  x -= speed;
+  if (!isPaused) {
+    x -= speed;
 
-  const half = track.scrollWidth / 2;
+    const half = track.scrollWidth / 2;
 
-  if (Math.abs(x) >= half) {
-    x = 0;
+    if (Math.abs(x) >= half) {
+      x = 0;
+    }
+
+    track.style.transform = `translateX(${x}px)`;
   }
-
-  track.style.transform = `translateX(${x}px)`;
 
   requestAnimationFrame(animate);
 }
 
 animate();
+
+/* =========================
+   🖱️ HOVER PAUSE (DESKTOP)
+========================= */
+wrapper.addEventListener("mouseenter", () => {
+  isPaused = true;
+});
+
+wrapper.addEventListener("mouseleave", () => {
+  isPaused = false;
+});
 </script>
 
 </body>
