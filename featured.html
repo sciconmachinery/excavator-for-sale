@@ -7,19 +7,21 @@
 
 <style>
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
+  font-family: Arial, sans-serif;
   background: #f5f6f8;
 }
 
-/* WRAPPER (Netflix row style) */
+/* WRAPPER */
 .scroll-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 25px 15px;
   scroll-behavior: smooth;
+  white-space: nowrap;
 }
 
+/* hide scrollbar */
 .scroll-wrapper::-webkit-scrollbar {
   display: none;
 }
@@ -28,12 +30,13 @@ body {
 .scroll-track {
   display: flex;
   gap: 18px;
+  width: max-content;
 }
 
 /* CARD */
 .card {
+  flex: 0 0 auto; /* CRITICAL FIX */
   min-width: 240px;
-  flex-shrink: 0;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
@@ -45,14 +48,12 @@ body {
   transform: scale(1.04);
 }
 
-/* IMAGE */
 .card-img img {
   width: 100%;
   height: 160px;
   object-fit: cover;
 }
 
-/* CONTENT */
 .card-content {
   padding: 12px;
 }
@@ -82,7 +83,6 @@ body {
   font-size: 14px;
 }
 
-/* BUTTONS */
 .btn-row {
   display: flex;
   gap: 6px;
@@ -118,9 +118,7 @@ body {
 
 <script>
 
-/* =========================
-   DATA (your full inventory)
-========================= */
+/* ================= DATA ================= */
 const excavators = [
   // 🔹 Budget
   {
@@ -434,15 +432,9 @@ const excavators = [
 
 ];
 
-/* =========================
-   FAST RENDER ENGINE
-========================= */
-
+/* ================= RENDER ================= */
 const track = document.getElementById("track");
 const wrapper = document.getElementById("wrapper");
-
-let index = 0;
-const BATCH = 6;
 
 function createCard(item) {
   return `
@@ -456,6 +448,7 @@ function createCard(item) {
     <div class="card-content">
       <div class="tag">${item.label}</div>
       <div class="segment">${item.segment}</div>
+
       <h3>${item.title}</h3>
       <p>${item.price}</p>
 
@@ -467,34 +460,35 @@ function createCard(item) {
   </div>`;
 }
 
-/* LOAD MORE (lazy infinite) */
-function loadMore() {
+/* load enough items so scroll is possible */
+function load() {
   let html = "";
-  for (let i = 0; i < BATCH; i++) {
-    const item = excavators[index % excavators.length];
+  for (let i = 0; i < 20; i++) {
+    const item = excavators[i % excavators.length];
     html += createCard(item);
-    index++;
   }
-  track.insertAdjacentHTML("beforeend", html);
+  track.innerHTML = html;
 }
 
-/* initial */
-loadMore();
+load();
 
-/* infinite lazy scroll */
-wrapper.addEventListener("scroll", () => {
-  if (wrapper.scrollLeft + wrapper.clientWidth >= track.scrollWidth - 250) {
-    loadMore();
+/* ================= AUTO SCROLL FIXED ================= */
+setTimeout(() => {
+  let speed = 2;
+
+  function scroll() {
+    wrapper.scrollLeft += speed;
+
+    /* infinite loop */
+    if (wrapper.scrollLeft >= track.scrollWidth - wrapper.clientWidth) {
+      wrapper.scrollLeft = 0;
+    }
+
+    requestAnimationFrame(scroll);
   }
-});
 
-/* optional auto drift (Netflix feel) */
-let auto = setInterval(() => wrapper.scrollLeft += 3, 20);
-
-wrapper.addEventListener("mouseenter", () => clearInterval(auto));
-wrapper.addEventListener("mouseleave", () => {
-  auto = setInterval(() => wrapper.scrollLeft += 3, 20);
-});
+  requestAnimationFrame(scroll);
+}, 500);
 
 </script>
 
