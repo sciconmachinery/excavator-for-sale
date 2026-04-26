@@ -13,31 +13,19 @@ body {
   overflow-x: hidden;
 }
 
-/* WRAPPER (viewport only) */
+/* VIEWPORT */
 .scroll-wrapper {
   width: 100%;
   overflow: hidden;
   padding: 30px 0;
 }
 
-/* TRACK (IMPORTANT: no max-content + no layout explosion) */
+/* TRACK */
 .scroll-track {
   display: flex;
-  gap: 24px;
-  width: fit-content;
+  gap: 20px;
+  width: max-content;
   will-change: transform;
-
-  animation: scroll 80s linear infinite;
-}
-
-/* 🔥 FIXED ANIMATION (THE KEY FIX) */
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
 }
 
 /* CARD */
@@ -127,18 +115,10 @@ body {
   color: white;
 }
 
-/* =========================
-   📱 MOBILE FIX (REAL SOLUTION)
-========================= */
+/* 📱 MOBILE FIX */
 @media (max-width: 768px) {
-
   .card {
-    width: 82vw; /* 🔥 FIX: prevents half-card issue */
-  }
-
-  .scroll-track {
-    gap: 16px;
-    animation-duration: 110s; /* smoother scroll */
+    width: 78vw;
   }
 }
 </style>
@@ -464,26 +444,14 @@ const excavators = [
 
 ];
 
-/* shuffle */
-function shuffle(array) {
-  let arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
 const track = document.getElementById("track");
 
 function createCard(item) {
   return `
     <div class="card">
-      <a href="${item.pageLink}" target="_blank">
-        <div class="card-img">
-          <img src="${item.img}" alt="${item.title}">
-        </div>
-      </a>
+      <div class="card-img">
+        <img src="${item.img}" alt="">
+      </div>
 
       <div class="card-content">
         <div class="tag">${item.label}</div>
@@ -493,31 +461,48 @@ function createCard(item) {
         <p>${item.price}</p>
 
         <div class="btn-row">
-          <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
-          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
+          <a class="btn info-btn" href="${item.pageLink}">Details</a>
+          <a class="btn wa-btn" href="${item.whatsapp}">WhatsApp</a>
         </div>
       </div>
     </div>
   `;
 }
 
-/* IMPORTANT: proper duplication for seamless loop */
-function render() {
-  const shuffled = shuffle(excavators);
-
-  let html = "";
-
-  // duplicate once for infinite scroll
-  const full = [...shuffled, ...shuffled];
-
-  full.forEach(item => {
-    html += createCard(item);
-  });
-
-  track.innerHTML = html;
+/* shuffle */
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
 }
 
-render();
+/* BUILD + DUPLICATE */
+let speed = 0.5;
+let x = 0;
+
+function setup() {
+  const data = shuffle(excavators);
+
+  // duplicate for seamless loop
+  track.innerHTML = [...data, ...data].map(createCard).join("");
+
+  requestAnimationFrame(animate);
+}
+
+/* REAL pixel-based infinite scroll */
+function animate() {
+  x -= speed;
+
+  const halfWidth = track.scrollWidth / 2;
+
+  if (Math.abs(x) >= halfWidth) {
+    x = 0;
+  }
+
+  track.style.transform = `translateX(${x}px)`;
+
+  requestAnimationFrame(animate);
+}
+
+setup();
 </script>
 
 </body>
