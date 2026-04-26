@@ -7,17 +7,17 @@
 
 <style>
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f6f8;
+  margin: 0;
   overflow-x: hidden;
 }
 
-/* VIEWPORT */
+/* WRAPPER */
 .scroll-wrapper {
   width: 100%;
   overflow: hidden;
-  padding: 20px 0;
+  padding: 25px 0;
 }
 
 /* TRACK */
@@ -27,16 +27,15 @@ body {
   will-change: transform;
 }
 
-/* ITEM */
+/* ITEM WRAPPER */
 .item {
   flex: 0 0 auto;
   padding: 0 10px;
-  box-sizing: border-box;
 }
 
-/* CARD */
+/* CARD (DESKTOP) */
 .card {
-  width: 280px;
+  width: 260px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
@@ -45,8 +44,9 @@ body {
   flex-direction: column;
 }
 
+/* IMAGE */
 .card-img {
-  height: 180px;
+  height: 160px;
 }
 
 .card-img img {
@@ -55,6 +55,7 @@ body {
   object-fit: cover;
 }
 
+/* CONTENT */
 .card-content {
   padding: 14px;
   display: flex;
@@ -68,9 +69,9 @@ body {
 }
 
 .segment {
-  font-size: 10px;
   display: inline-block;
   padding: 4px 8px;
+  font-size: 10px;
   background: #eaeaea;
   border-radius: 999px;
   margin: 6px 0;
@@ -83,10 +84,12 @@ body {
 }
 
 .card p {
+  font-size: 15px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
+/* BUTTONS */
 .btn-row {
   margin-top: auto;
   display: flex;
@@ -106,22 +109,30 @@ body {
 .info-btn { background: #f1f1f1; color: #333; }
 .wa-btn { background: #25D366; color: white; }
 
-/* 📱 MOBILE FIX */
+/* =========================
+   📱 MOBILE FIX (IMPORTANT)
+========================= */
 @media (max-width: 768px) {
+
   .card {
-    width: 88vw;
+    width: 78vw;      /* 🔥 FIX: prevents half card */
+    max-width: 320px;
   }
+
   .card-img {
-    height: 130px;
+    height: 140px;
   }
+
   .card-content {
     padding: 10px;
   }
+
   .card h3 {
-    font-size: 14px;
+    font-size: 13px;
   }
+
   .card p {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 </style>
@@ -455,8 +466,8 @@ function shuffle(arr) {
 const track = document.getElementById("track");
 const wrapper = document.getElementById("wrapper");
 
-/* create card */
-function card(item) {
+/* build cards */
+function create(item) {
   return `
     <div class="item">
       <div class="card">
@@ -482,24 +493,24 @@ function card(item) {
 }
 
 /* duplicate for infinite scroll */
-track.innerHTML = [...shuffle(excavators), ...shuffle(excavators)].map(card).join("");
+track.innerHTML =
+  [...shuffle(excavators), ...shuffle(excavators)]
+  .map(create)
+  .join("");
 
 /* =========================
-   🚀 ANIMATION ENGINE
+   🚀 AUTO SCROLL ENGINE
 ========================= */
 let x = 0;
 const speed = 0.6;
-let isPaused = false;
+let paused = false;
 
 function animate() {
-  if (!isPaused) {
+  if (!paused) {
     x -= speed;
 
     const half = track.scrollWidth / 2;
-
-    if (Math.abs(x) >= half) {
-      x = 0;
-    }
+    if (Math.abs(x) >= half) x = 0;
 
     track.style.transform = `translateX(${x}px)`;
   }
@@ -509,15 +520,13 @@ function animate() {
 
 animate();
 
-/* =========================
-   🖱️ HOVER PAUSE (DESKTOP)
-========================= */
+/* PAUSE ON HOVER (DESKTOP ONLY) */
 wrapper.addEventListener("mouseenter", () => {
-  isPaused = true;
+  paused = true;
 });
 
 wrapper.addEventListener("mouseleave", () => {
-  isPaused = false;
+  paused = false;
 });
 </script>
 
