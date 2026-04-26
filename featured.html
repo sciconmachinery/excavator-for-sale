@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Excavators for Sale | Scicon Machinery</title>
+<title>Excavators | Scicon Machinery</title>
 
 <style>
 body {
@@ -12,16 +12,15 @@ body {
   background: #f5f6f8;
 }
 
-/* WRAPPER */
+/* SCROLL AREA */
 .scroll-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 25px 15px;
-  scroll-behavior: smooth;
   white-space: nowrap;
+  scroll-behavior: smooth;
 }
 
-/* hide scrollbar */
 .scroll-wrapper::-webkit-scrollbar {
   display: none;
 }
@@ -35,7 +34,7 @@ body {
 
 /* CARD */
 .card {
-  flex: 0 0 auto; /* CRITICAL FIX */
+  flex: 0 0 auto;
   min-width: 240px;
   background: #fff;
   border-radius: 14px;
@@ -58,10 +57,7 @@ body {
   padding: 12px;
 }
 
-.tag {
-  font-size: 12px;
-  color: #666;
-}
+.tag { font-size: 12px; color: #666; }
 
 .segment {
   display: inline-block;
@@ -71,16 +67,6 @@ body {
   background: #eee;
   border-radius: 999px;
   text-transform: uppercase;
-}
-
-.card h3 {
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.card p {
-  font-weight: bold;
-  font-size: 14px;
 }
 
 .btn-row {
@@ -98,15 +84,8 @@ body {
   text-decoration: none;
 }
 
-.info-btn {
-  background: #eee;
-  color: #333;
-}
-
-.wa-btn {
-  background: #25D366;
-  color: #fff;
-}
+.info-btn { background: #eee; color: #333; }
+.wa-btn { background: #25D366; color: #fff; }
 </style>
 </head>
 
@@ -432,16 +411,24 @@ const excavators = [
 
 ];
 
-/* ================= RENDER ================= */
 const track = document.getElementById("track");
 const wrapper = document.getElementById("wrapper");
 
+/* ================= RANDOM SHUFFLE ================= */
+function shuffle(array) {
+  return array
+    .map(v => ({ v, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ v }) => v);
+}
+
+/* ================= CREATE CARD ================= */
 function createCard(item) {
   return `
   <div class="card">
     <a href="${item.pageLink}" target="_blank">
       <div class="card-img">
-        <img src="${item.img}" loading="lazy" decoding="async">
+        <img src="${item.img}" loading="lazy">
       </div>
     </a>
 
@@ -460,35 +447,42 @@ function createCard(item) {
   </div>`;
 }
 
-/* load enough items so scroll is possible */
-function load() {
-  let html = "";
-  for (let i = 0; i < 20; i++) {
-    const item = excavators[i % excavators.length];
-    html += createCard(item);
+/* ================= LOAD RANDOM LOOP ================= */
+function loadInitial() {
+  let items = [];
+
+  // duplicate shuffled items so scrolling works
+  for (let i = 0; i < 4; i++) {
+    items = items.concat(shuffle(excavators));
   }
-  track.innerHTML = html;
+
+  track.innerHTML = items.map(createCard).join("");
 }
 
-load();
+loadInitial();
 
-/* ================= AUTO SCROLL FIXED ================= */
-setTimeout(() => {
-  let speed = 2;
+/* ================= AUTO SCROLL ================= */
+let speed = 2;
+let paused = false;
 
-  function scroll() {
+function autoScroll() {
+  if (!paused) {
     wrapper.scrollLeft += speed;
 
-    /* infinite loop */
     if (wrapper.scrollLeft >= track.scrollWidth - wrapper.clientWidth) {
       wrapper.scrollLeft = 0;
+      loadInitial(); // reshuffle again for "infinite random feel"
     }
-
-    requestAnimationFrame(scroll);
   }
 
-  requestAnimationFrame(scroll);
-}, 500);
+  requestAnimationFrame(autoScroll);
+}
+
+requestAnimationFrame(autoScroll);
+
+/* ================= PAUSE ON HOVER ================= */
+wrapper.addEventListener("mouseenter", () => paused = true);
+wrapper.addEventListener("mouseleave", () => paused = false);
 
 </script>
 
