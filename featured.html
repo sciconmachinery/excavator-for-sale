@@ -95,6 +95,7 @@ body {
   text-align: center;
   text-decoration: none;
   border-radius: 6px;
+  display: block;
 }
 
 .info-btn { background: #f1f1f1; color: #333; }
@@ -111,7 +112,9 @@ body {
 
 <script>
 
-/* DATA (unchanged) */
+/* =========================
+   DATA
+   ========================= */
 const excavators = [
   // 🔹 Budget
   {
@@ -425,7 +428,9 @@ const excavators = [
 
 ];
 
-/* shuffle */
+/* =========================
+   SHUFFLE
+   ========================= */
 function shuffle(a){
   let arr = a.slice();
   for(let i = arr.length - 1; i > 0; i--){
@@ -437,30 +442,44 @@ function shuffle(a){
 
 const track = document.getElementById("track");
 
+/* =========================
+   CREATE CARD
+   ========================= */
 function createCard(i){
   return `
-  <div class="card">
-    <a href="${i.pageLink}">
-      <div class="card-img">
-        <img src="${i.img}">
-      </div>
-    </a>
+    <div class="card">
 
-    <div class="card-content">
-      <div class="tag">${i.label}</div>
-      <div class="segment">${i.segment}</div>
-      <h3>${i.title}</h3>
-      <div class="price">${i.price}</div>
+      <a href="${i.pageLink}" target="_blank" rel="noopener noreferrer">
+        <div class="card-img">
+          <img src="${i.img}">
+        </div>
+      </a>
 
-      <div class="btn-row">
-        <a class="btn info-btn" href="${i.pageLink}" target="_blank">Details</a>
-        <a class="btn wa-btn" href="${i.whatsapp}" target="_blank">WhatsApp</a>
+      <div class="card-content">
+        <div class="tag">${i.label}</div>
+        <div class="segment">${i.segment}</div>
+        <h3>${i.title}</h3>
+
+        <div class="price">${i.price}</div>
+
+        <div class="btn-row">
+          <a class="btn info-btn" href="${i.pageLink}" target="_blank" rel="noopener noreferrer">
+            Details
+          </a>
+
+          <a class="btn wa-btn" href="${i.whatsapp}" target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+        </div>
       </div>
+
     </div>
-  </div>`;
+  `;
 }
 
-/* render */
+/* =========================
+   RENDER RANDOM
+   ========================= */
 function render(){
   let s = shuffle(excavators);
   track.innerHTML = [...s, ...s].map(createCard).join("");
@@ -468,9 +487,8 @@ function render(){
 render();
 
 /* =========================
-   AUTO SCROLL ENGINE
+   AUTO SCROLL
    ========================= */
-
 let pos = 0;
 let speed = 1.2;
 let paused = false;
@@ -486,21 +504,17 @@ function animate(){
 animate();
 
 /* =========================
-   FIXED PAUSE SYSTEM (MOBILE + DESKTOP)
+   PAUSE CONTROL (FIXED)
    ========================= */
-
 const wrapper = document.getElementById("wrapper");
 
-/* desktop */
 wrapper.addEventListener("mouseenter", () => paused = true);
 wrapper.addEventListener("mouseleave", () => paused = false);
 
-/* mobile + tablet (IMPORTANT FIX) */
 wrapper.addEventListener("pointerdown", () => paused = true);
 wrapper.addEventListener("pointerup", () => paused = false);
 wrapper.addEventListener("pointercancel", () => paused = false);
 
-/* safety: tab switch */
 document.addEventListener("visibilitychange", () => {
   paused = document.hidden;
 });
