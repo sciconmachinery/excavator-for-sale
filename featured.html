@@ -25,8 +25,11 @@ body {
   gap: 10px;
   width: max-content;
   animation: scroll 120s linear infinite;
+  position: relative;
+  z-index: 1;
 }
 
+/* PAUSE ON HOVER */
 .scroll-wrapper:hover .scroll-track {
   animation-play-state: paused;
 }
@@ -46,6 +49,8 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 2; /* 🔥 ensures clickable */
 }
 
 /* IMAGE */
@@ -67,7 +72,6 @@ body {
   height: 100%;
 }
 
-/* TOP TEXT */
 .tag {
   font-size: 10px;
   color: #666;
@@ -89,12 +93,12 @@ body {
   margin: 0 0 4px;
 }
 
-/* 🔥 PRICE PUSHED DOWN */
+/* PRICE */
 .price {
-  margin-top: auto;        /* THIS IS THE MAGIC */
+  margin-top: auto;
   font-size: 13px;
   font-weight: bold;
-  margin-bottom: 4px;      /* small gap above buttons */
+  margin-bottom: 4px;
 }
 
 /* BUTTONS */
@@ -111,6 +115,9 @@ body {
   font-size: 11px;
   font-weight: bold;
   text-decoration: none;
+  pointer-events: auto; /* 🔥 clickable fix */
+  z-index: 5;
+  position: relative;
 }
 
 .info-btn { background: #f1f1f1; color: #333; }
@@ -443,7 +450,6 @@ const excavators = [
 
 ];
 
-/* shuffle */
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
 }
@@ -453,9 +459,12 @@ const track = document.getElementById("track");
 function createCard(item) {
   return `
     <div class="card">
-      <div class="card-img">
-        <img src="${item.img}">
-      </div>
+
+      <a href="${item.pageLink}" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="${item.img}">
+        </div>
+      </a>
 
       <div class="card-content">
         <div class="tag">${item.label}</div>
@@ -466,10 +475,11 @@ function createCard(item) {
         <div class="price">${item.price}</div>
 
         <div class="btn-row">
-          <a class="btn info-btn" href="#">Details</a>
-          <a class="btn wa-btn" href="#">WhatsApp</a>
+          <a class="btn info-btn" href="${item.pageLink}" target="_blank" rel="noopener">Details</a>
+          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>
         </div>
       </div>
+
     </div>
   `;
 }
