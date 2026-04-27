@@ -16,15 +16,15 @@ body {
 .scroll-wrapper {
   overflow: hidden;
   width: 100%;
-  padding: 10px 0;
+  padding: 12px 0;
 }
 
 /* TRACK */
 .scroll-track {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   width: max-content;
-  animation: scroll 140s linear infinite; /* slower */
+  animation: scroll 120s linear infinite;
 }
 
 .scroll-wrapper:hover .scroll-track {
@@ -33,26 +33,24 @@ body {
 
 @keyframes scroll {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to { transform: translateX(-100%); }
 }
 
 /* CARD */
 .card {
-  min-width: 200px;
-  max-width: 200px;
+  min-width: 230px;
+  max-width: 230px;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 /* IMAGE */
 .card-img {
-  width: 100%;
-  height: 95px; /* 🔥 smaller again */
+  height: 110px;
 }
 
 .card-img img {
@@ -63,57 +61,56 @@ body {
 
 /* CONTENT */
 .card-content {
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  height: 100%;
 }
 
+/* TOP TEXT */
 .tag {
-  font-size: 9px;
+  font-size: 10px;
   color: #666;
   margin-bottom: 2px;
 }
 
 .segment {
   display: inline-block;
-  padding: 2px 5px;
+  padding: 2px 6px;
   font-size: 8px;
   border-radius: 999px;
   background: #eaeaea;
   color: #555;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .card h3 {
-  font-size: 11px;
-  margin: 0 0 2px;
+  font-size: 13px;
+  margin: 0 0 4px;
 }
 
-.card p {
-  font-size: 11px;
+/* 🔥 PRICE PUSHED DOWN */
+.price {
+  margin-top: auto;        /* THIS IS THE MAGIC */
+  font-size: 13px;
   font-weight: bold;
-  margin: 0;
+  margin-bottom: 4px;      /* small gap above buttons */
 }
 
-/* BUTTON ROW */
+/* BUTTONS */
 .btn-row {
   display: flex;
   gap: 5px;
-  margin-top: 5px;
-  padding: 0 6px 6px;
-  flex-shrink: 0;
 }
 
 .btn {
   flex: 1;
-  padding: 5px;
-  border-radius: 5px;
+  padding: 7px;
+  border-radius: 6px;
   text-align: center;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: bold;
   text-decoration: none;
-  white-space: nowrap;
 }
 
 .info-btn { background: #f1f1f1; color: #333; }
@@ -121,27 +118,17 @@ body {
 
 /* MOBILE */
 @media (max-width: 768px) {
-
-  .scroll-track {
-    gap: 6px;
-    animation-duration: 80s;
-  }
-
   .card {
-    min-width: 60vw;  /* smaller but still full view */
-    max-width: 60vw;
+    min-width: 68vw;
+    max-width: 68vw;
   }
 
   .card-img {
-    height: 85px; /* 🔥 smallest safe */
+    height: 95px;
   }
 
-  .card h3 { font-size: 10px; }
-  .card p { font-size: 10px; }
-
-  .btn {
-    font-size: 9px;
-    padding: 4px;
+  .scroll-track {
+    animation-duration: 80s;
   }
 }
 </style>
@@ -456,13 +443,9 @@ const excavators = [
 
 ];
 
+/* shuffle */
 function shuffle(array) {
-  let arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
+  return array.sort(() => Math.random() - 0.5);
 }
 
 const track = document.getElementById("track");
@@ -470,24 +453,22 @@ const track = document.getElementById("track");
 function createCard(item) {
   return `
     <div class="card">
-      <div>
-        <a href="${item.pageLink}" target="_blank">
-          <div class="card-img">
-            <img src="${item.img}" alt="${item.title}">
-          </div>
-        </a>
-
-        <div class="card-content">
-          <div class="tag">${item.label}</div>
-          <div class="segment">${item.segment}</div>
-          <h3>${item.title}</h3>
-          <p>${item.price}</p>
-        </div>
+      <div class="card-img">
+        <img src="${item.img}">
       </div>
 
-      <div class="btn-row">
-        <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
-        <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
+      <div class="card-content">
+        <div class="tag">${item.label}</div>
+        <div class="segment">${item.segment}</div>
+
+        <h3>${item.title}</h3>
+
+        <div class="price">${item.price}</div>
+
+        <div class="btn-row">
+          <a class="btn info-btn" href="#">Details</a>
+          <a class="btn wa-btn" href="#">WhatsApp</a>
+        </div>
       </div>
     </div>
   `;
