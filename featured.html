@@ -41,9 +41,7 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.card-img {
-  height: 90px;
-}
+.card-img { height: 90px; }
 
 .card-img img {
   width: 100%;
@@ -83,6 +81,7 @@ body {
   margin-bottom: 4px;
 }
 
+/* BUTTONS */
 .btn-row {
   display: flex;
   gap: 5px;
@@ -112,9 +111,7 @@ body {
 
 <script>
 
-/* =========================
-   DATA
-   ========================= */
+/* DATA (unchanged) */
 const excavators = [
   // 🔹 Budget
   {
@@ -415,11 +412,20 @@ const excavators = [
     whatsapp: "https://wa.me/601154224312?text=KomatsuD21ABulldozer"
   },
 
+{
+    title: "Komatsu D20A Bulldozer",
+    price: "Whatsapp us for Price",
+    type: "dozer",
+    segment: "dozer",
+    label: "Bulldozer",
+    img: "https://i.imgur.com/kvmKjiB.png",
+    pageLink: "https://www.sciconmachinery.com/komatsu-d20a-bulldozer",
+    whatsapp: "https://wa.me/601154224312?text=KomatsuD20ABulldozer"
+  }
+
 ];
 
-/* =========================
-   SHUFFLE
-   ========================= */
+/* shuffle */
 function shuffle(a){
   let arr = a.slice();
   for(let i = arr.length - 1; i > 0; i--){
@@ -431,9 +437,6 @@ function shuffle(a){
 
 const track = document.getElementById("track");
 
-/* =========================
-   CREATE CARD
-   ========================= */
 function createCard(i){
   return `
   <div class="card">
@@ -450,17 +453,14 @@ function createCard(i){
       <div class="price">${i.price}</div>
 
       <div class="btn-row">
-        <a class="btn info-btn" href="${i.pageLink}">Details</a>
-        <a class="btn wa-btn" href="${i.whatsapp}">WhatsApp</a>
+        <a class="btn info-btn" href="${i.pageLink}" target="_blank">Details</a>
+        <a class="btn wa-btn" href="${i.whatsapp}" target="_blank">WhatsApp</a>
       </div>
     </div>
-  </div>
-  `;
+  </div>`;
 }
 
-/* =========================
-   RENDER (RANDOM + LOOP)
-   ========================= */
+/* render */
 function render(){
   let s = shuffle(excavators);
   track.innerHTML = [...s, ...s].map(createCard).join("");
@@ -470,6 +470,7 @@ render();
 /* =========================
    AUTO SCROLL ENGINE
    ========================= */
+
 let pos = 0;
 let speed = 1.2;
 let paused = false;
@@ -477,32 +478,29 @@ let paused = false;
 function animate(){
   if(!paused){
     pos += speed;
-
-    if(pos >= track.scrollWidth / 2){
-      pos = 0;
-    }
-
+    if(pos >= track.scrollWidth / 2) pos = 0;
     track.style.transform = `translateX(-${pos}px)`;
   }
-
   requestAnimationFrame(animate);
 }
 animate();
 
 /* =========================
-   PAUSE FIX (REAL WORKING)
+   FIXED PAUSE SYSTEM (MOBILE + DESKTOP)
    ========================= */
+
 const wrapper = document.getElementById("wrapper");
 
-/* desktop hover */
-wrapper.addEventListener("pointerenter", () => paused = true);
-wrapper.addEventListener("pointerleave", () => paused = false);
+/* desktop */
+wrapper.addEventListener("mouseenter", () => paused = true);
+wrapper.addEventListener("mouseleave", () => paused = false);
 
-/* mobile touch */
-wrapper.addEventListener("touchstart", () => paused = true, {passive:true});
-wrapper.addEventListener("touchend", () => paused = false);
+/* mobile + tablet (IMPORTANT FIX) */
+wrapper.addEventListener("pointerdown", () => paused = true);
+wrapper.addEventListener("pointerup", () => paused = false);
+wrapper.addEventListener("pointercancel", () => paused = false);
 
-/* tab switch */
+/* safety: tab switch */
 document.addEventListener("visibilitychange", () => {
   paused = document.hidden;
 });
