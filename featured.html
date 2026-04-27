@@ -13,7 +13,7 @@ body {
   overflow: hidden;
 }
 
-/* VIEWPORT */
+/* WRAPPER */
 .scroll-wrapper {
   width: 100%;
   overflow: hidden;
@@ -74,7 +74,6 @@ body {
 .card h3 {
   font-size: 12px;
   margin: 4px 0;
-  line-height: 1.2;
 }
 
 .price {
@@ -112,6 +111,10 @@ body {
 </div>
 
 <script>
+
+/* =========================
+   DATA
+   ========================= */
 const excavators = [
   // 🔹 Budget
   {
@@ -414,38 +417,50 @@ const excavators = [
 
 ];
 
-/* shuffle */
+/* =========================
+   SHUFFLE
+   ========================= */
 function shuffle(a){
   let arr = a.slice();
-  for(let i=arr.length-1;i>0;i--){
-    let j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+  for(let i = arr.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
 }
 
 const track = document.getElementById("track");
 
+/* =========================
+   CREATE CARD
+   ========================= */
 function createCard(i){
   return `
   <div class="card">
     <a href="${i.pageLink}">
-      <div class="card-img"><img src="${i.img}"></div>
+      <div class="card-img">
+        <img src="${i.img}">
+      </div>
     </a>
+
     <div class="card-content">
       <div class="tag">${i.label}</div>
       <div class="segment">${i.segment}</div>
       <h3>${i.title}</h3>
       <div class="price">${i.price}</div>
+
       <div class="btn-row">
         <a class="btn info-btn" href="${i.pageLink}">Details</a>
         <a class="btn wa-btn" href="${i.whatsapp}">WhatsApp</a>
       </div>
     </div>
-  </div>`;
+  </div>
+  `;
 }
 
-/* render random */
+/* =========================
+   RENDER (RANDOM + LOOP)
+   ========================= */
 function render(){
   let s = shuffle(excavators);
   track.innerHTML = [...s, ...s].map(createCard).join("");
@@ -453,9 +468,8 @@ function render(){
 render();
 
 /* =========================
-   AUTO SCROLL (PAUSE FIXED)
+   AUTO SCROLL ENGINE
    ========================= */
-
 let pos = 0;
 let speed = 1.2;
 let paused = false;
@@ -463,20 +477,35 @@ let paused = false;
 function animate(){
   if(!paused){
     pos += speed;
-    if(pos >= track.scrollWidth/2) pos = 0;
+
+    if(pos >= track.scrollWidth / 2){
+      pos = 0;
+    }
+
     track.style.transform = `translateX(-${pos}px)`;
   }
+
   requestAnimationFrame(animate);
 }
 animate();
 
-/* pause + resume */
+/* =========================
+   PAUSE FIX (REAL WORKING)
+   ========================= */
 const wrapper = document.getElementById("wrapper");
 
-wrapper.addEventListener("mouseenter", ()=> paused = true);
-wrapper.addEventListener("mouseleave", ()=> paused = false);
-wrapper.addEventListener("touchstart", ()=> paused = true);
-wrapper.addEventListener("touchend", ()=> paused = false);
+/* desktop hover */
+wrapper.addEventListener("pointerenter", () => paused = true);
+wrapper.addEventListener("pointerleave", () => paused = false);
+
+/* mobile touch */
+wrapper.addEventListener("touchstart", () => paused = true, {passive:true});
+wrapper.addEventListener("touchend", () => paused = false);
+
+/* tab switch */
+document.addEventListener("visibilitychange", () => {
+  paused = document.hidden;
+});
 
 </script>
 
