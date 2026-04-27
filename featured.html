@@ -3,24 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excavators for Sale | Scicon Machinery</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
 body {
   font-family: Arial, sans-serif;
   background: #f5f6f8;
   margin: 0;
 }
 
-/* 🔥 KEY FIX: FIXED HEIGHT */
+/* WRAPPER */
 .scroll-wrapper {
   overflow: hidden;
   width: 100%;
-  padding: 10px 0;
-  height: 260px;   /* ✅ desktop height */
+  padding: 16px 0;
 }
 
 /* TRACK */
@@ -28,17 +24,16 @@ body {
   display: flex;
   gap: 12px;
   width: max-content;
-  animation: scroll 150s linear infinite;
+  animation: scroll 120s linear infinite;
 }
 
-/* pause on hover */
 .scroll-wrapper:hover .scroll-track {
   animation-play-state: paused;
 }
 
 @keyframes scroll {
   from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+  to { transform: translateX(-50%); }
 }
 
 /* CARD */
@@ -50,12 +45,14 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  justify-content: space-between; /* 🔥 KEY FIX */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* IMAGE */
 .card-img {
-  height: 120px;
+  width: 100%;
+  height: 130px;
 }
 
 .card-img img {
@@ -66,7 +63,7 @@ body {
 
 /* CONTENT */
 .card-content {
-  padding: 8px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -75,63 +72,67 @@ body {
 .tag {
   font-size: 10px;
   color: #666;
+  margin-bottom: 3px;
 }
 
 .segment {
-  font-size: 8px;
-  background: #eee;
+  display: inline-block;
   padding: 2px 6px;
+  font-size: 9px;
   border-radius: 999px;
-  margin: 4px 0;
+  background: #eaeaea;
+  color: #555;
+  margin-bottom: 4px;
 }
 
 .card h3 {
   font-size: 13px;
-  margin: 4px 0;
+  margin: 0 0 4px;
 }
 
 .card p {
   font-size: 13px;
   font-weight: bold;
+  margin-bottom: 6px;
 }
 
-/* BUTTONS */
+/* BUTTON ROW (FIXED HEIGHT) */
 .btn-row {
-  margin-top: auto;
   display: flex;
   gap: 6px;
+  margin-top: 8px;
+  flex-shrink: 0; /* 🔥 prevents disappearing */
 }
 
 .btn {
   flex: 1;
-  padding: 6px;
-  font-size: 11px;
+  padding: 7px;
   border-radius: 6px;
   text-align: center;
+  font-size: 11px;
+  font-weight: bold;
   text-decoration: none;
+  white-space: nowrap; /* 🔥 prevents collapse */
 }
 
-.info-btn { background: #eee; color: #333; }
+.info-btn { background: #f1f1f1; color: #333; }
 .wa-btn { background: #25D366; color: white; }
 
 /* ================= MOBILE ================= */
 @media (max-width: 768px) {
 
-  .scroll-wrapper {
-    height: 220px;  /* ✅ MOBILE FIX */
-  }
-
   .scroll-track {
-    animation-duration: 110s;
+    gap: 8px;
+    animation-duration: 70s;
   }
 
   .card {
-    min-width: 68vw;   /* 🔥 tighter fit */
+    min-width: 68vw;
     max-width: 68vw;
   }
 
   .card-img {
-    height: 100px;   /* 🔥 smaller image */
+    height: 110px;
   }
 
   .card h3 {
@@ -140,6 +141,11 @@ body {
 
   .card p {
     font-size: 12px;
+  }
+
+  .btn {
+    font-size: 10px;
+    padding: 6px;
   }
 }
 </style>
@@ -152,6 +158,7 @@ body {
 </div>
 
 <script>
+// keep your same data (no changes needed)
 const excavators = [
   // 🔹 Budget
   {
@@ -454,8 +461,14 @@ const excavators = [
 
 ];
 
+/* shuffle */
 function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 const track = document.getElementById("track");
@@ -463,21 +476,26 @@ const track = document.getElementById("track");
 function createCard(item) {
   return `
     <div class="card">
-      <div class="card-img">
-        <img src="${item.img}">
+      <div>
+        <a href="${item.pageLink}" target="_blank">
+          <div class="card-img">
+            <img src="${item.img}">
+          </div>
+        </a>
+
+        <div class="card-content">
+          <div class="tag">${item.label}</div>
+          <div class="segment">${item.segment}</div>
+
+          <h3>${item.title}</h3>
+          <p>${item.price}</p>
+        </div>
       </div>
 
-      <div class="card-content">
-        <div class="tag">${item.label}</div>
-        <div class="segment">${item.segment}</div>
-
-        <h3>${item.title}</h3>
-        <p>${item.price}</p>
-
-        <div class="btn-row">
-          <a class="btn info-btn">Details</a>
-          <a class="btn wa-btn">WhatsApp</a>
-        </div>
+      <!-- 🔥 buttons separated so they NEVER disappear -->
+      <div class="btn-row">
+        <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
+        <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
       </div>
     </div>
   `;
