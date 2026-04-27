@@ -10,22 +10,23 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f6f8;
-  overflow-x: hidden; /* 🔥 removes swipe feel */
+  overflow: hidden;
 }
 
-/* WRAPPER (NO SCROLLING) */
+/* VIEWPORT */
 .scroll-wrapper {
   width: 100%;
-  overflow: hidden; /* 🔥 disables swipe completely */
+  overflow: hidden;
   padding: 12px 0;
+  position: relative;
 }
 
 /* TRACK */
 .scroll-track {
   display: flex;
   gap: 10px;
-  padding: 0 10px;
   width: max-content;
+  will-change: transform;
 }
 
 /* CARD */
@@ -40,7 +41,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-/* IMAGE */
 .card-img {
   height: 90px;
 }
@@ -51,7 +51,6 @@ body {
   object-fit: cover;
 }
 
-/* CONTENT */
 .card-content {
   padding: 7px;
   display: flex;
@@ -78,7 +77,6 @@ body {
   line-height: 1.2;
 }
 
-/* PRICE */
 .price {
   margin-top: auto;
   font-size: 12px;
@@ -86,7 +84,6 @@ body {
   margin-bottom: 4px;
 }
 
-/* BUTTONS */
 .btn-row {
   display: flex;
   gap: 5px;
@@ -110,7 +107,7 @@ body {
 
 <body>
 
-<div class="scroll-wrapper">
+<div class="scroll-wrapper" id="wrapper">
   <div class="scroll-track" id="track"></div>
 </div>
 
@@ -417,76 +414,69 @@ const excavators = [
 
 ];
 
-/* 🔀 RANDOM SHUFFLE */
-function shuffle(array) {
-  let arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+/* shuffle */
+function shuffle(a){
+  let arr = a.slice();
+  for(let i=arr.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 
 const track = document.getElementById("track");
 
-function createCard(item) {
+function createCard(i){
   return `
-    <div class="card">
-      <a href="${item.pageLink}" target="_blank">
-        <div class="card-img">
-          <img src="${item.img}">
-        </div>
-      </a>
-
-      <div class="card-content">
-        <div class="tag">${item.label}</div>
-        <div class="segment">${item.segment}</div>
-
-        <h3>${item.title}</h3>
-
-        <div class="price">${item.price}</div>
-
-        <div class="btn-row">
-          <a class="btn info-btn" href="${item.pageLink}" target="_blank">Details</a>
-          <a class="btn wa-btn" href="${item.whatsapp}" target="_blank">WhatsApp</a>
-        </div>
+  <div class="card">
+    <a href="${i.pageLink}">
+      <div class="card-img"><img src="${i.img}"></div>
+    </a>
+    <div class="card-content">
+      <div class="tag">${i.label}</div>
+      <div class="segment">${i.segment}</div>
+      <h3>${i.title}</h3>
+      <div class="price">${i.price}</div>
+      <div class="btn-row">
+        <a class="btn info-btn" href="${i.pageLink}">Details</a>
+        <a class="btn wa-btn" href="${i.whatsapp}">WhatsApp</a>
       </div>
     </div>
-  `;
+  </div>`;
 }
 
-/* render random + duplicate for infinite loop */
-function render() {
-  const shuffled = shuffle(excavators);
-
-  let html = "";
-  shuffled.forEach(i => html += createCard(i));
-  shuffled.forEach(i => html += createCard(i)); // loop illusion
-
-  track.innerHTML = html;
+/* render random */
+function render(){
+  let s = shuffle(excavators);
+  track.innerHTML = [...s, ...s].map(createCard).join("");
 }
-
 render();
 
 /* =========================
-   AUTO SCROLL (NO SWIPE)
+   AUTO SCROLL (PAUSE FIXED)
    ========================= */
 
 let pos = 0;
-const speed = 1.3;
+let speed = 1.2;
+let paused = false;
 
-function move() {
-  pos += speed;
-
-  if (pos >= track.scrollWidth / 2) {
-    pos = 0; // reset loop
+function animate(){
+  if(!paused){
+    pos += speed;
+    if(pos >= track.scrollWidth/2) pos = 0;
+    track.style.transform = `translateX(-${pos}px)`;
   }
-
-  track.style.transform = `translateX(${-pos}px)`;
-  requestAnimationFrame(move);
+  requestAnimationFrame(animate);
 }
+animate();
 
-move();
+/* pause + resume */
+const wrapper = document.getElementById("wrapper");
+
+wrapper.addEventListener("mouseenter", ()=> paused = true);
+wrapper.addEventListener("mouseleave", ()=> paused = false);
+wrapper.addEventListener("touchstart", ()=> paused = true);
+wrapper.addEventListener("touchend", ()=> paused = false);
 
 </script>
 
